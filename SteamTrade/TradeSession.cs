@@ -26,13 +26,10 @@ namespace SteamTrade
 
         StatusObj GetStatus ()
         {
-            var data = new NameValueCollection ();
-
-            data.Add ("sessionid", sessionIdEsc);
-            data.Add ("logpos", "" + LogPos);
-            data.Add ("version", "" + Version);
+            var data = InitData();
+            SetLogPosVersion(data);
             
-            string response = Fetch (baseTradeURL + "tradestatus", "POST", data);
+            string response = GetResult("tradestatus", data);
             return JsonConvert.DeserializeObject<StatusObj> (response);
         }
 
@@ -43,22 +40,11 @@ namespace SteamTrade
         /// </summary>
         bool SendMessageWebCmd (string msg)
         {
-            var data = new NameValueCollection ();
-            data.Add ("sessionid", sessionIdEsc);
-            data.Add ("message", msg);
-            data.Add ("logpos", "" + LogPos);
-            data.Add ("version", "" + Version);
+            var data = InitData();
+            SetLogPosVersion(data);
+            data.Add("message", msg);
 
-            string result = Fetch (baseTradeURL + "chat", "POST", data);
-
-            dynamic json = JsonConvert.DeserializeObject(result);
-
-            if (json == null || json.success != "true")
-            {
-                return false;
-            }
-
-            return true;
+            return Execute("chat", data);
         }
         
         /// <summary>
@@ -72,24 +58,10 @@ namespace SteamTrade
         /// </returns>
         bool AddItemWebCmd (ulong itemid, int slot)
         {
-            var data = new NameValueCollection ();
+            var data = InitData();
+            SetItemSlot(data, itemid, slot);
 
-            data.Add ("sessionid", sessionIdEsc);
-            data.Add ("appid", "440");
-            data.Add ("contextid", "2");
-            data.Add ("itemid", "" + itemid);
-            data.Add ("slot", "" + slot);
-
-            string result = Fetch(baseTradeURL + "additem", "POST", data);
-
-            dynamic json = JsonConvert.DeserializeObject(result);
-
-            if (json == null || json.success != "true")
-            {
-                return false;
-            }
-
-            return true;
+            return Execute("additem", data);
         }
         
         /// <summary>
@@ -99,24 +71,10 @@ namespace SteamTrade
         /// </summary>
         bool RemoveItemWebCmd (ulong itemid, int slot)
         {
-            var data = new NameValueCollection ();
+            var data = InitData();
+            SetItemSlot(data, itemid, slot);
 
-            data.Add ("sessionid", sessionIdEsc);
-            data.Add ("appid", "440");
-            data.Add ("contextid", "2");
-            data.Add ("itemid", "" + itemid);
-            data.Add ("slot", "" + slot);
-
-            string result = Fetch (baseTradeURL + "removeitem", "POST", data);
-
-            dynamic json = JsonConvert.DeserializeObject(result);
-
-            if (json == null || json.success != "true")
-            {
-                return false;
-            }
-
-            return true;
+            return Execute("removeitem", data);
         }
         
         /// <summary>
@@ -124,21 +82,11 @@ namespace SteamTrade
         /// </summary>
         bool SetReadyWebCmd (bool ready)
         {
-            var data = new NameValueCollection ();
-            data.Add ("sessionid", sessionIdEsc);
+            var data = InitData();
             data.Add ("ready", ready ? "true" : "false");
-            data.Add ("version", "" + Version);
-            
-            string result = Fetch (baseTradeURL + "toggleready", "POST", data);
+            data.Add ("version", Version.ToString());
 
-            dynamic json = JsonConvert.DeserializeObject(result);
-
-            if (json == null || json.success != "true")
-            {
-                return false;
-            }
-
-            return true;
+            return Execute("toggleready", data);
         }
         
         /// <summary>
@@ -147,21 +95,10 @@ namespace SteamTrade
         /// </summary>
         bool AcceptTradeWebCmd ()
         {
-            var data = new NameValueCollection ();
+            var data = InitData();
+            data.Add ("version", Version.ToString());
 
-            data.Add ("sessionid", sessionIdEsc);
-            data.Add ("version", "" + Version);
-
-            string response = Fetch (baseTradeURL + "confirm", "POST", data);
-
-            dynamic json = JsonConvert.DeserializeObject(response);
-
-            if (json == null || json.success != "true")
-            {
-                return false;
-            }
-
-            return true;
+            return Execute("confirm", data);
         }
         
         /// <summary>
@@ -169,20 +106,9 @@ namespace SteamTrade
         /// </summary>
         bool CancelTradeWebCmd ()
         {
-            var data = new NameValueCollection ();
+            var data = InitData();
 
-            data.Add ("sessionid", sessionIdEsc);
-
-            string result = Fetch (baseTradeURL + "cancel", "POST", data);
-
-            dynamic json = JsonConvert.DeserializeObject(result);
-
-            if (json == null || json.success != "true")
-            {
-                return false;
-            }
-
-            return true;
+            return Execute("cancel", data);
         }
 
         #endregion Trade Web command methods
@@ -203,6 +129,48 @@ namespace SteamTrade
             cookies.Add (new Cookie ("steamLogin", steamLogin, String.Empty, SteamCommunityDomain));
 
             baseTradeURL = String.Format (SteamTradeUrl, OtherSID.ConvertToUInt64 ());
+        }
+
+        private string GetResult(string cmd, NameValueCollection data)
+        {
+            return Fetch(String.Format("{0}{1}", baseTradeURL, cmd), "POST", data);
+        }
+
+        private bool Execute(string cmd, NameValueCollection data)
+        {
+            string result = GetResult(cmd, data);
+
+            dynamic json = JsonConvert.DeserializeObject(result);
+
+            if (json == null || json.success != "true")
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private NameValueCollection InitData()
+        {
+            var data = new NameValueCollection();
+
+            data.Add("sessionid", sessionIdEsc);
+
+            return data;
+        }
+
+        private void SetLogPosVersion(NameValueCollection data)
+        {
+            data.Add("logpos", LogPos.ToString());
+            data.Add("version", Version.ToString());
+        }
+
+        private void SetItemSlot(NameValueCollection data, ulong itemid, int slot) 
+        {
+            data.Add ("appid", "440");
+            data.Add ("contextid", "2");
+            data.Add ("itemid", itemid.ToString());
+            data.Add ("slot", slot.ToString());
         }
 
         public class StatusObj

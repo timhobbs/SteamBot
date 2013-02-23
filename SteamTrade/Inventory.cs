@@ -15,7 +15,7 @@ namespace SteamTrade
         /// <param name='apiKey'>The needed Steam API key.</param>
         public static Inventory FetchInventory (ulong steamId, string apiKey)
         {
-            var url = "http://api.steampowered.com/IEconItems_440/GetPlayerItems/v0001/?key=" + apiKey + "&steamid=" + steamId;
+            var url = String.Format("http://api.steampowered.com/IEconItems_440/GetPlayerItems/v0001/?key={0}&steamid={1}", apiKey, steamId);
             string response = SteamWeb.Fetch (url, "GET", null, null, false);
             InventoryResponse result = JsonConvert.DeserializeObject<InventoryResponse>(response);
             return new Inventory(result.result);

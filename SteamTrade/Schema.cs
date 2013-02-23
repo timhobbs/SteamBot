@@ -12,9 +12,9 @@ namespace SteamTrade
 
         public static Schema FetchSchema (string apiKey)
         {
-            var url = "http://api.steampowered.com/IEconItems_440/GetSchema/v0001/?key=" + apiKey;
+            var url = String.Format("http://api.steampowered.com/IEconItems_440/GetSchema/v0001/?key={0}", apiKey);
 
-            string cachefile="tf_schema.cache";
+            string cachefile="botdata\\tf_schema.cache";
             string result;
 
             HttpWebResponse response = SteamWeb.Request(url, "GET");

@@ -2,7 +2,7 @@
 using SteamKit2;
 using SteamTrade;
 
-namespace SteamBot
+namespace SteamBot.UserHandlers
 {
     /// <summary>
     /// A user handler class that implements basic text-based commands entered in
@@ -39,7 +39,7 @@ namespace SteamBot
                 return true;
             }
 
-            Log.Warn("Random SteamID: " + OtherSID + " tried to add the bot as a friend");
+            Log.Warn(String.Format("Random SteamID: {0} tried to add the bot as a friend", OtherSID));
             return false;
         }
 

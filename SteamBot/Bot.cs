@@ -14,31 +14,44 @@ namespace SteamBot
     public class Bot
     {
         public string BotControlClass;
-        // If the bot is logged in fully or not.  This is only set
-        // when it is.
+
+        /// <summary>
+        /// If the bot is logged in fully or not.  This is only set
+        /// when it is.
+        /// </summary>
         public bool IsLoggedIn = false;
 
-        // The bot's display name.  Changing this does not mean that
-        // the bot's name will change.
+        /// <summary>
+        /// The bot's display name.  Changing this does not mean that
+        /// the bot's name will change.
+        /// </summary>
         public string DisplayName { get; private set; }
 
-        // The response to all chat messages sent to it.
+        /// <summary>
+        /// The response to all chat messages sent to it.
+        /// </summary>
         public string ChatResponse;
 
-        // A list of SteamIDs that this bot recognizes as admins.
+        /// <summary>
+        /// A list of SteamIDs that this bot recognizes as admins.
+        /// </summary>
         public ulong[] Admins;
         public SteamFriends SteamFriends;
         public SteamClient SteamClient;
         public SteamTrading SteamTrade;
         public SteamUser SteamUser;
 
-        // The current trade; if the bot is not in a trade, this is
-        // null.
+        /// <summary>
+        /// The current trade; if the bot is not in a trade, this is
+        /// null.
+        /// </summary>
         public Trade CurrentTrade;
 
         public bool IsDebugMode = false;
 
-        // The log for the bot.  This logs with the bot's display name.
+        /// <summary>
+        /// The log for the bot.  This logs with the bot's display name.
+        /// </summary>
         public Log log;
 
         public delegate UserHandler UserHandlerCreator(Bot bot, SteamID id);
@@ -47,23 +60,35 @@ namespace SteamBot
 
         List<SteamID> friends = new List<SteamID>();
 
-        // The maximum amount of time the bot will trade for.
+        /// <summary>
+        /// The maximum amount of time the bot will trade for.
+        /// </summary>
         public int MaximumTradeTime { get; private set; }
 
-        // The maximum amount of time the bot will wait in between
-        // trade actions.
+        /// <summary>
+        /// The maximum amount of time the bot will wait in between
+        /// trade actions.
+        /// </summary>
         public int MaximiumActionGap { get; private set; }
 
-        // The Steam Web API key.
+        /// <summary>
+        /// The Steam Web API key.
+        /// </summary>
         string apiKey;
 
-        // The prefix put in the front of the bot's display name.
+        /// <summary>
+        /// The prefix put in the front of the bot's display name.
+        /// </summary>
         string DisplayNamePrefix;
 
-        // Log level to use for this bot
+        /// <summary>
+        /// Log level to use for this bot
+        /// </summary>
         Log.LogLevel LogLevel;
-
-        // The number, in milliseconds, between polls for the trade.
+ 
+        /// <summary>
+        /// The number, in milliseconds, between polls for the trade.
+        /// </summary>
         int TradePollingInterval;
 
         string sessionId;
@@ -199,7 +224,7 @@ namespace SteamBot
                                              EChatEntryType.ChatMsg,
                                              response);
 
-                log.Info ("Bot sent other: " + response);
+                log.Info (String.Format("Bot sent other: {0}", response));
                 
                 CurrentTrade = null;
                 return false;
@@ -218,7 +243,7 @@ namespace SteamBot
             #region Login
             msg.Handle<SteamClient.ConnectedCallback> (callback =>
             {
-                log.Debug ("Connection Callback: " + callback.Result);
+                log.Debug (String.Format("Connection Callback: {0}", callback.Result));
 
                 if (callback.Result == EResult.OK)
                 {
@@ -234,11 +259,11 @@ namespace SteamBot
 
             msg.Handle<SteamUser.LoggedOnCallback> (callback =>
             {
-                log.Debug ("Logged On Callback: " + callback.Result);
+                log.Debug (String.Format("Logged On Callback: {0}", callback.Result));
 
                 if (callback.Result != EResult.OK)
                 {
-                    log.Error ("Login Error: " + callback.Result);
+                    log.Error (String.Format("Login Error: {0}", callback.Result));
                 }
 
                 if (callback.Result == EResult.AccountLogonDenied)
@@ -386,7 +411,7 @@ namespace SteamBot
 
             msg.Handle<SteamTrading.TradeResultCallback> (callback =>
             {
-                log.Debug ("Trade Status: "+ callback.Response);
+                log.Debug (String.Format("Trade Status: {0}", callback.Response));
 
                 if (callback.Response == EEconTradeResponse.Accepted)
                 {
@@ -414,7 +439,7 @@ namespace SteamBot
             msg.Handle<SteamUser.LoggedOffCallback> (callback =>
             {
                 IsLoggedIn = false;
-                log.Warn ("Logged Off: " + callback.Result);
+                log.Warn (String.Format("Logged Off: {0}", callback.Result));
             });
 
             msg.Handle<SteamClient.DisconnectedCallback> (callback =>
@@ -431,7 +456,7 @@ namespace SteamBot
         {
             // get sentry file which has the machine hw info saved 
             // from when a steam guard code was entered
-            FileInfo fi = new FileInfo(String.Format("{0}.sentryfile", logOnDetails.Username));
+            FileInfo fi = new FileInfo(String.Format("botdata\\{0}.sentryfile", logOnDetails.Username));
 
             if (fi.Exists && fi.Length > 0)
                 logOnDetails.SentryFileHash = SHAHash(File.ReadAllBytes(fi.FullName));
@@ -465,7 +490,7 @@ namespace SteamBot
         {
             byte[] hash = SHAHash (machineAuth.Data);
 
-            File.WriteAllBytes (String.Format ("{0}.sentryfile", logOnDetails.Username), machineAuth.Data);
+            File.WriteAllBytes (String.Format ("botdata\\{0}.sentryfile", logOnDetails.Username), machineAuth.Data);
             
             var authResponse = new SteamUser.MachineAuthDetails
             {

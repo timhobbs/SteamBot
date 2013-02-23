@@ -514,7 +514,7 @@ namespace SteamTrade
                     default:
                         // Todo: add an OnWarning or similar event
                         if (OnError != null)
-                            OnError ("Unkown Event ID: " + status.events [EventID].action);
+                            OnError (String.Format("Unkown Event ID: {0}", status.events [EventID].action));
                         break;
                     }
 
@@ -573,11 +573,11 @@ namespace SteamTrade
 
             // check if the correct item was added
             if (wasAdded && !myOfferedItems.ContainsValue (itemid))
-                throw new TradeException ("Steam Trade had an invalid item added: " + itemid);
+                throw new TradeException (String.Format("Steam Trade had an invalid item added: {0}", itemid));
 
             // check if the correct item was removed
             if (!wasAdded && myOfferedItems.ContainsValue (itemid))
-                throw new TradeException ("Steam Trade had an invalid item removed: " + itemid);
+                throw new TradeException (String.Format("Steam Trade had an invalid item removed: {0}", itemid));
         }
 
         void ValidateLocalTradeItems ()

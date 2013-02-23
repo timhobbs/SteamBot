@@ -32,6 +32,14 @@ namespace SteamBot
                 return Bot.CurrentTrade; 
             }
         }
+
+        public SteamID SteamID
+        {
+            get
+            {
+                return Bot.SteamUser.SteamID;
+            }
+        }
         
         /// <summary>
         /// Gets the log the bot uses for convenience.

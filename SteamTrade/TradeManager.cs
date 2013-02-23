@@ -300,7 +300,7 @@ namespace SteamTrade
                         
                         // ok then we should stop polling...
                         IsTradeThreadRunning = false;
-                        DebugPrint ("[TRADEMANAGER] general error caught: " + ex);
+                        DebugPrint (String.Format("[TRADEMANAGER] general error caught: {0}", ex));
                     }
                 }
 
@@ -341,7 +341,7 @@ namespace SteamTrade
             }
             else if (untilActionTimeout <= 20 && untilActionTimeout % 10 == 0)
             {
-                trade.SendMessage ("Are You AFK? The trade will be canceled in " + untilActionTimeout + " seconds if you don't do something.");
+                trade.SendMessage (String.Format("Are You AFK? The trade will be canceled in {0} seconds if you don't do something.", untilActionTimeout));
             }
         }
 

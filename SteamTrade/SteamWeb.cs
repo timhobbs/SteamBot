@@ -95,8 +95,8 @@ namespace SteamTrade
 
             SteamResult loginJson = null;
             CookieCollection cookies;
-            string steamGuardText = "";
-            string steamGuardId   = "";
+            string steamGuardText = String.Empty;
+            string steamGuardId   = String.Empty;
             do
             {
                 Console.WriteLine ("SteamWeb: Logging In...");
@@ -112,17 +112,17 @@ namespace SteamTrade
                 data.Add ("username", username);
 
                 // Captcha
-                string capText = "";
+                string capText = String.Empty;
                 if (captcha)
                 {
                     Console.WriteLine ("SteamWeb: Captcha is needed.");
-                    System.Diagnostics.Process.Start ("https://steamcommunity.com/public/captcha.php?gid=" + loginJson.captcha_gid);
+                    System.Diagnostics.Process.Start (String.Format("https://steamcommunity.com/public/captcha.php?gid={0}", loginJson.captcha_gid));
                     Console.WriteLine ("SteamWeb: Type the captcha:");
                     capText = Uri.EscapeDataString (Console.ReadLine ());
                 }
 
-                data.Add ("captcha_gid", captcha ? capGID : "");
-                data.Add ("captcha_text", captcha ? capText : "");
+                data.Add ("captcha_gid", captcha ? capGID : String.Empty);
+                data.Add ("captcha_text", captcha ? capText : String.Empty);
                 // Captcha end
 
                 // SteamGuard
@@ -163,7 +163,7 @@ namespace SteamTrade
             }
             else
             {
-                Console.WriteLine ("SteamWeb Error: " + loginJson.message);
+                Console.WriteLine (String.Format("SteamWeb Error: {0}", loginJson.message));
                 return null;
             }
 

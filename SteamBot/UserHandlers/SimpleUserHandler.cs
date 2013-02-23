@@ -1,8 +1,9 @@
 using SteamKit2;
 using System.Collections.Generic;
 using SteamTrade;
+using System;
 
-namespace SteamBot
+namespace SteamBot.UserHandlers
 {
     public class SimpleUserHandler : UserHandler
     {
@@ -31,7 +32,7 @@ namespace SteamBot
         {
             Bot.SteamFriends.SendChatMessage (OtherSID, 
                                               EChatEntryType.ChatMsg,
-                                              "Oh, there was an error: " + error + "."
+                                              String.Format("Oh, there was an error: {0}.", error)
                                               );
             Bot.log.Warn (error);
         }
@@ -66,7 +67,7 @@ namespace SteamBot
                 {
                     Trade.SetReady (true);
                 }
-                Trade.SendMessage ("Scrap: " + ScrapPutUp);
+                Trade.SendMessage (String.Format("Scrap: {0}", ScrapPutUp));
             }
         }
         
@@ -107,7 +108,7 @@ namespace SteamBot
                 else
                 {
                     var schemaItem = Trade.CurrentSchema.GetItem (item.Defindex);
-                    errors.Add ("Item " + schemaItem.Name + " is not a metal.");
+                    errors.Add (String.Format("Item {0} is not a metal.", schemaItem.Name));
                 }
             }
             
